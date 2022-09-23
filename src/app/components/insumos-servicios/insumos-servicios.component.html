@@ -1,0 +1,146 @@
+<div class = 'container'>
+    <div class="card">
+      <div class="card-body">
+
+        <div class="d-flex justify-content-between">
+          <!-- title -->
+          <h4 class="card-title">Insumos y Servicios</h4>
+          <div class="ml-auto">
+            <div class="dl">
+              <button type="button" class="ml-2 btn btn-primary" (click)="openModal(content,'create',null)">
+                <i class="mdi mdi-plus"></i>
+              </button>
+            </div>
+          </div>
+        </div>
+        <!-- title -->
+      </div>
+      <div class="table-responsive d-none d-sm-none d-md-block">
+          <table class="table mb-0 no-wrap v-middle">
+              <thead class="">
+                  <tr class="bg-light">
+                      <th class="border-top-0">#</th>
+                      <th class="border-top-0">Descripción</th>
+                      <th class="border-top-0">Tipo</th>
+                      <th class="border-top-0">Unid. Medida</th>
+                      <th class="border-top-0">Precio Costo</th>
+                      <th class="border-top-0">Precio Venta</th>
+                      <th class="border-top-0 text-center">Acciones</th>
+                  </tr>
+              </thead>
+              <tbody>
+                  <tr *ngFor='let data of supplies;let i = index'>
+                      <td>{{i+1}}</td>
+                      <td>
+                          <span>
+                            {{data.description}}
+                          </span>
+                      </td>
+                      <td>
+                          <span>
+                            {{data.type}}
+                          </span>
+                      </td>
+                      <td>
+                          <span>
+                            {{data.unit}}
+                          </span>
+                      </td>
+                      <td>
+                          <span>{{data.costPrice}}</span>
+                      </td>
+                      <td>
+                          <span>{{data.salePrice}}</span>
+                      </td>
+                      <td class="text-center">
+                          <div class="d-flex justify-content-center">
+                            <a class="mx-2 pl-3" (click)="openModal(content,'update',data)">
+                                <i class="mdi mdi-border-color"></i>
+                            </a>
+                            <a class="text-danger mx-2 pl-3" (click)="removeSupplie(data.supplie)">
+                                <i class="mdi mdi-delete"></i>
+                            </a>
+                          </div>
+                      </td>
+                  </tr>         
+              </tbody>
+          </table>
+      </div>
+      <div class="d-flex justify-content-center mt-5">
+          <!--<ngb-pagination
+              class="d-none d-sm-none d-md-block"
+              [(page)]="page"
+              [pageSize]="pageSize"
+              [collectionSize]="lawyers.length">
+          </ngb-pagination>-->
+      </div>
+    </div>
+</div>
+
+<!--NgbModal-->
+<ng-template #content let-modal class="modal-dialog modal-dialog-centered">
+    <div class="modal-header">
+        <h4 class="modal-title">{{modalTitle}}</h4>
+        <button type="button" aria-label="Close" class="close" (click)="modal.dismiss('Cross click')">
+            <span  aria-hidden="true">×</span>
+        </button>
+    </div>
+    <div class="modal-body">
+      <form [formGroup]="form" autocomplete="off">
+        <div class="form-group row mb-3">
+          <label for="description" class="col-sm-6 form-label">Description</label>
+          <div class="col-sm-12">
+            <input type="text" class="form-control" id="description" placeholder="Descripción" formControlName="description">
+          </div>
+        </div>
+        <div class="form-group row mb-3">
+          <div class="col-md-6">
+            <label for="Type" class="col-sm-6 form-label">Tipo</label>
+            <div class="col-sm-12">
+              <select id="type" formControlName="type" class="form-control" required>
+                <option selected value="Insumo">Insumo</option>
+                <option value="Servicio">Servicio</option>
+              </select>
+            </div>
+          </div>
+          <div class="col-md-6">
+            <label for="unit" class="col-sm-6 form-label">Unidad de medida</label>
+            <div class="col-sm-12">
+              <input type="text" class="form-control" id="unit" placeholder="Unidad de medida" formControlName="unit">
+            </div>
+          </div>
+        </div>
+        <div class="form-group row mb-3">
+          <div class="col-md-6">
+            <label for="costPrice" class="col-sm-6form-label">Precio costo</label>
+            <div class="col-sm-12">
+              <input type="number" class="form-control" id="costPrice" placeholder="Precio costo" formControlName="costPrice">
+            </div>
+          </div>
+          <div class="col-md-6">
+            <label for="salePrice" class="col-sm-6 form-label">Precio venta</label>
+            <div class="col-sm-12">
+              <input type="number" class="form-control" id="salePrice" placeholder="Precio venta" formControlName="salePrice">
+            </div>
+          </div>
+        </div>
+      </form>
+
+      <div  class="row justify-content-end mt-3">
+        <div class="col-md-2 mr-2">
+          <button type="button" class="btn btn-secondary mr-2" (click)="modal.close('Close click')">
+            Cancelar
+          </button>
+        </div>
+        <div class="col-md-2 mr-2">
+          <button *ngIf="action=='update'" type="submit" class="btn btn-primary" (click)="updateSupplie();modal.close('Close click')" [disabled]="!form.valid">
+            Actualizar
+          </button>
+          <button *ngIf="action!='update'" type="submit" class="btn btn-primary" (click)="createSupplie();modal.close('Close click')" [disabled]="!form.valid">
+            Guardar
+          </button>
+        </div>
+      </div>
+    </div>
+</ng-template>
+

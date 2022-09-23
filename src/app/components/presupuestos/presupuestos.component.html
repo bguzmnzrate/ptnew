@@ -1,0 +1,233 @@
+<div class = 'container'>
+    <div class="card">
+      <div class="card-body">
+
+        <div class="d-flex justify-content-between">
+          <!-- title -->
+          <h4 class="card-title">Presupuestos</h4>
+          <div class="ml-auto">
+            <div class="dl">
+              <button type="button" class="ml-2 btn btn-primary" (click)="openModal(content,'create',null)">
+                <i class="mdi mdi-plus"></i>
+              </button>
+            </div>
+          </div>
+        </div>
+        <!-- title -->
+      </div>
+      <div class="table-responsive d-none d-sm-none d-md-block">
+          <table class="table mb-0 no-wrap v-middle">
+              <thead class="">
+                  <tr class="bg-light">
+                      <th class="border-top-0 ">#</th>
+                      <th class="border-top-0 ">Proyecto</th>
+                      <th class="border-top-0 ">Cliente</th>
+                      <th class="border-top-0 ">Fecha</th>
+                      <th class="border-top-0 ">Actualización</th>
+                      <th class="border-top-0 "># Items</th>
+                      <th class="border-top-0 ">Subtotal</th>
+                      <th class="border-top-0 ">IVA</th>
+                      <th class="border-top-0 ">Total</th>
+                      <th class="border-top-0 text-center">Acciones</th>
+                  </tr>
+              </thead>
+              <tbody>
+                  <tr *ngFor='let data of budgets;let i = index'>
+                      <td>{{i+1}}</td>
+                      <td>
+                          <span>
+                            {{data.projectName}}
+                          </span>
+                      </td>
+                      <td>
+                          <span>
+                            {{data.customer.firstname}} {{data.customer.lastname}}
+                          </span>
+                      </td>
+                      <td>
+                          <span>
+                            {{data.created?.seconds * 1000 | date }}
+                          </span>
+                      </td>
+                      <td>
+                          <span>
+                            {{data.update?.seconds * 1000 | date }}
+                          </span>
+                      </td>
+                      <td>
+                          <span>{{data.items?.length}}</span>
+                      </td>
+                      <td>
+                          <span>{{data.subTotal | currency }}</span>
+                      </td>
+                      <td>
+                          <span>{{data.taxes | currency }}</span>
+                      </td>
+                      <td>
+                          <span>{{data.total | currency }}</span>
+                      </td>
+                      <td class="text-center">
+                          <div class="d-flex justify-content-center">
+                            <a class="mx-2 pl-3" (click)="openModal(content,'update',data)">
+                                <i class="mdi mdi-border-color"></i>
+                            </a>
+                            <a class="text-danger mx-2 pl-3" (click)="removeBudget(data.budget)">
+                                <i class="mdi mdi-delete"></i>
+                            </a>
+                            <a class="text-danger mx-2 pl-3" (click)="openModal(content,'view',data)">
+                                <i class="mdi mdi-file-document"></i>
+                            </a>
+                          </div>
+                      </td>
+                  </tr>         
+              </tbody>
+          </table>
+      </div>
+      <div class="d-flex justify-content-center mt-5">
+          <!--<ngb-pagination
+              class="d-none d-sm-none d-md-block"
+              [(page)]="page"
+              [pageSize]="pageSize"
+              [collectionSize]="lawyers.length">
+          </ngb-pagination>-->
+      </div>
+    </div>
+</div>
+
+<!--NgbModal-->
+<ng-template #content let-modal class="modal-dialog modal-dialog-centered">
+    <div class="modal-header">
+        <h4 class="modal-title">{{modalTitle}}</h4>
+        <button type="button" aria-label="Close" class="close" (click)="modal.dismiss('Cross click')">
+            <span  aria-hidden="true">×</span>
+        </button>
+    </div>
+    <div class="modal-body">
+        <form [formGroup]="form" autocomplete="off">
+          <div class="form-group row mb-3">
+              <label for="projectName" class="col-sm-6 form-label">Alias del proyecto</label>
+              <div class="col-sm-12">
+                <input type="text" class="form-control" id="projectName" placeholder="Alias del proyecto" formControlName="projectName">
+              </div>
+          </div>
+          <div class="form-group row mb-3">
+            <label for="formGroupCustomer" class="col-sm-6 form-label">Cliente</label>
+            <div class="col-sm-12">
+              <div  class="input-group mb-3">
+                <input
+                  type="text" 
+                  class="form-control" 
+                  id="formGroupCustomer" 
+                  placeholder="Buscar..." 
+                  formControlName="fullnameCustomer"
+                  [editable]="false"
+                  [ngbTypeahead]="searchCustomer"
+                  [resultTemplate]="rtc"
+                  [inputFormatter]="formatter"
+                  (selectItem)="patchValue($event,'customer')"
+                  required/>
+                <div class="input-group-append" *ngIf="show">
+                  <a *ngIf="action!=='view'" type="button" (click)="clean('customer')" class="input-group-text">
+                    <i class="mdi mdi-close"></i>
+                  </a>
+                </div>
+              </div>
+              <ng-template #rtc let-r="result" let-t="term">
+                  <ngb-highlight [result]="r.firstname+' '+r.lastname" [term]="r" ></ngb-highlight>
+              </ng-template>
+            </div>
+          </div>
+          <!--totales-->
+          <div class="form-group row mb-3">
+            <div class="col-md-4">
+              <label for="subTotal" class="col-sm-4 form-label">Subtotal</label>
+              <div class="input-group mb-3">
+                <span class="input-group-text">$</span>
+                <input id="subTotal" type="text" class="form-control" aria-label="subTotal" formControlName="subTotal">
+                <span class="input-group-text">.00</span>
+              </div>
+            </div>
+            <div class="col-md-4">
+              <label for="taxes" class="col-sm-4 form-label">IVA</label>
+              <div class="input-group mb-3">
+                <span class="input-group-text">$</span>
+                <input id="taxes" type="text" class="form-control" aria-label="IVA" formControlName="taxes">
+                <span class="input-group-text">.00</span>
+              </div>
+            </div>
+            <div class="col-md-4">
+              <label for="total" class="col-sm-4 form-label">Total</label>
+              <div class="input-group mb-3">
+                <span class="input-group-text">$</span>
+                <input id="total" type="text" class="form-control" aria-label="Total" formControlName="total">
+                <span class="input-group-text">.00</span>
+              </div>
+            </div>
+          </div>
+        </form>
+        <form [formGroup]="supplieForm" autocomplete="off" *ngIf="action!='view'">
+          <div class="form-group row">
+            <label for="formGroupSupplies" class="col-sm-6 form-label">Insumos o servicios</label>
+            <div class="col-sm-12">
+              <div  class="input-group mb-3">
+                <input
+                  type="text" 
+                  class="form-control" 
+                  id="formGroupSupplies" 
+                  placeholder="Buscar..." 
+                  formControlName="description"
+                  [editable]="true"
+                  [ngbTypeahead]="searchSupplie" 
+                  [resultTemplate]="rta2"
+                  [inputFormatter]="formatter2"
+                  (selectItem)="addItem($event)"
+                  required/>
+                  <div class="input-group-append" *ngIf="show2">
+                    <a type="button" (click)="clean('supplie')"  class="input-group-text">
+                      <i class="mdi mdi-plus"></i>
+                    </a>
+                  </div>
+                </div>
+                <ng-template #rta2 let-r="result" let-t="term">
+                  <ngb-highlight [result]="r.description" [term]="r" ></ngb-highlight>
+                </ng-template>
+              </div>
+            </div>
+        </form>
+        <div class="table-responsive">
+            <table class="table mb-0 no-wrap v-middle" *ngIf="items">
+                <tbody>
+                    <tr *ngFor='let item of items;let i = index'>
+                        <td>
+                            <span>{{item.description}}</span>
+                        </td>
+                        <td class="text-center" *ngIf="action!='view'">
+                            <a class="text-danger mx-2 pl-3 border-left" (click)="removeItem(item.supplie)">
+                                <i class="mdi mdi-delete"></i>
+                            </a>
+                        </td>
+                    </tr>              
+                </tbody>
+            </table>
+        </div>
+        <div  class="row justify-content-end mt-3">
+            <div class="col-md-2 mr-2">
+                <button type="button" class="btn btn-secondary mr-2" (click)="modal.close('Close click')">
+                    Cancelar
+                </button>
+            </div>
+            <div class="col-md-2">
+            	<button *ngIf="action=='update'" type="submit" class="btn btn-primary" (click)="updateBudget();modal.close('Close click')" [disabled]="!form.valid">
+                    Actualizar
+                </button>
+                <button *ngIf="action=='create'" type="submit" class="btn btn-primary" (click)="createBudget();modal.close('Close click')" [disabled]="!form.valid">
+                    Guardar
+                </button>
+                <button *ngIf="action=='view'" type="button" class="btn btn-primary" (click)="modal.close('Close click')">
+                    Imprimir
+                </button>
+            </div>
+        </div>
+    </div>
+</ng-template>
+

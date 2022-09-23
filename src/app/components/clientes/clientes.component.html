@@ -1,0 +1,136 @@
+<div class = 'container'>
+    <div class="card">
+      <div class="card-body">
+
+        <div class="d-flex justify-content-between">
+          <!-- title -->
+          <h4 class="card-title">Clientes</h4>
+          <div class="ml-auto">
+            <div class="dl">
+              <button type="button" class="ml-2 btn btn-primary" (click)="openModal(content,'create',null)">
+                <i class="mdi mdi-plus"></i>
+              </button>
+            </div>
+          </div>
+        </div>
+        <!-- title -->
+      </div>
+      <div class="table-responsive d-none d-sm-none d-md-block">
+          <table class="table mb-0 no-wrap v-middle">
+              <thead class="">
+                  <tr class="bg-light">
+                      <th class="border-top-0">#</th>
+                      <th class="border-top-0">Nombre</th>
+                      <th class="border-top-0">Ruta</th>
+                      <th class="border-top-0">Correo</th>
+                      <th class="border-top-0">Dirección</th>
+                      <th class="border-top-0 text-center">Acciones</th>
+                  </tr>
+              </thead>
+              <tbody>
+                  <tr *ngFor='let data of customers;let i = index'>
+                      <td>{{i+1}}</td>
+                      <td>
+                          <span>
+                            {{data.firstname}} {{data.lastname}}
+                          </span>
+                      </td>
+                      <td>
+                          <span>
+                            {{data.route}}
+                          </span>
+                      </td>
+                      <td>
+                          <span>
+                            {{data.email}}
+                          </span>
+                      </td>
+                      <td>
+                          <span>{{data.address}}</span>
+                      </td>
+                      <td class="text-center">
+                          <div class="d-flex justify-content-center">
+                            <a class="mx-2 pl-3" (click)="openModal(content,'update',data)">
+                                <i class="mdi mdi-border-color"></i>
+                            </a>
+                            <a class="text-danger mx-2 pl-3" (click)="removeCustomer(data.customer)">
+                                <i class="mdi mdi-delete"></i>
+                            </a>
+                          </div>
+                      </td>
+                  </tr>         
+              </tbody>
+          </table>
+      </div>
+      <div class="d-flex justify-content-center mt-5">
+          <!--<ngb-pagination
+              class="d-none d-sm-none d-md-block"
+              [(page)]="page"
+              [pageSize]="pageSize"
+              [collectionSize]="lawyers.length">
+          </ngb-pagination>-->
+      </div>
+    </div>
+</div>
+
+<!--NgbModal-->
+<ng-template #content let-modal class="modal-dialog modal-dialog-centered">
+    <div class="modal-header">
+        <h4 class="modal-title">{{modalTitle}}</h4>
+        <button type="button" aria-label="Close" class="close" (click)="modal.dismiss('Cross click')">
+            <span  aria-hidden="true">×</span>
+        </button>
+    </div>
+    <div class="modal-body">
+      <form [formGroup]="form" autocomplete="off">
+        <div class="form-group row mb-3">
+          <label for="firstname" class="col-sm-6 form-label">Nombre</label>
+          <div class="col-sm-12">
+            <input type="text" class="form-control" id="firstname" placeholder="Nombre" formControlName="firstname">
+          </div>
+        </div>
+        <div class="form-group row mb-3">
+          <label for="lastname" class="col-sm-6 form-label">Apellido(s)</label>
+          <div class="col-sm-12">
+            <input type="text" class="form-control" id="lastname" placeholder="Apellido(s)" formControlName="lastname">
+          </div>
+        </div>
+        <div class="form-group row mb-3">
+          <div class="col-md-6">
+            <label for="route" class="col-sm-6 form-label">Ruta</label>
+            <div class="col-sm-12">
+              <input type="text" class="form-control" id="route" placeholder="Ruta" formControlName="route">
+            </div>
+          </div>
+          <div class="col-md-6">
+            <label for="email" class="col-sm-6 form-label">Email</label>
+            <div class="col-sm-12">
+              <input type="email" class="form-control" id="email" placeholder="Email" formControlName="email">
+            </div>
+          </div>
+        </div>
+        <div class="form-group row mb-3">
+          <label for="address" class="col-sm-6 form-label">Dirección</label>
+          <div class="col-sm-12">
+            <input type="text" class="form-control" id="address" placeholder="Dirección" formControlName="address">
+          </div>
+        </div>
+      </form>
+      
+      <div  class="row justify-content-end mt-3">
+        <div class="col-md-2 mr-2">
+          <button type="button" class="btn btn-secondary mr-2" (click)="modal.close('Close click')">
+            Cancelar
+          </button>
+        </div>
+        <div class="col-md-2 mr-2">
+          <button *ngIf="action=='update'" type="submit" class="btn btn-primary ml-2" (click)="updateCustomer();modal.close('Close click')" [disabled]="!form.valid">
+              Actualizar
+          </button>
+          <button *ngIf="action!='update'" type="submit" class="btn btn-primary ml-2" (click)="createCustomer();modal.close('Close click')" [disabled]="!form.valid">
+              Guardar
+          </button>
+        </div>
+      </div>
+    </div>
+</ng-template>
